@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Title</title>
+</head>
+<style type="text/css">
+    #range {
+        width:2000px;
+        height:2000px;
+        position:absolute;
+        /*overflow:hidden;*/
+        border:1px solid black;
+        overflow: hidden;
+    }
+
+    #graph {
+        width:2000px;
+        height: 2000px;
+        position: absolute;
+        background-color: yellow;
+        left: 0px;
+        top: 0px;
+        z-index: 1;
+    }
+
+    #container {
+        width:2000px;
+        height: 2000px;
+        position: absolute;
+        background-color: #131313;
+        left: 0px;
+        top: 0px;
+        z-index: 2;
+        pointer-events: none;
+    }
+</style>
+<script type="application/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="application/javascript" src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.2.6/build/g6.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.1.0/build/grid.js"></script>
+<script type="application/javascript">
+    var position = {top: 0, left: 0};
+
+    $(document).ready(function() {
+        var container = $("#container");
+        $("#graph").draggable({
+            // containment: "parent",
+            drag: function(event, ui) {
+                position = ui.position;
+                container.css('left', position.left);
+                container.css('top', position.top);
+            },
+            // stop: function(event, ui) {
+            //     console.log('aa');
+                // container.css('left', 0);
+                // container.css('top', 0);
+            // }
+        });
+    });
+</script>
+<script type="application/javascript">
+// $(document).ready(function() {
+//     const grid = new Grid();
+//     G6.registerLayout('test-layout', {
+//         getDefaultCfg: function getDefaultCfg() {
+//         },
+//
+//         execute: function execute() {
+//         }
+//     }, 'mds');
+//
+//     const graph = new G6.Graph({
+//         container: 'container',
+//         width: 2000,
+//         height: 2000,
+//         plugins: [grid],
+//         layout: {
+//             type: 'test-layout',
+//         },
+//         defaultNode: {
+//             // shape: "circle-animate",
+//             size: 8,
+//         },
+//         defaultEdge: {
+//             // shape: "quadratic",
+//             style: {
+//                 opacity: 0.8,
+//                 stroke: '#D5D5D5',
+//                 lineWidth: 0.3
+//             }
+//         },
+//         animate: true,
+//         //renderer: "svg"
+//     });
+//
+//     const top = position.top * -1;
+//     const left = position.left * -1;
+//     const endTop = top + 2000;
+//     const endLeft = left + 2000;
+//     const queryString = `leftTopX=${left}&leftTopY=${top}&rightBottomX=${endTop}&rightBottomY=${endLeft}`;
+//     $.get(`http://localhost:8087/graph/vo?${queryString}`, function(data) {
+//         graph.data({
+//             nodes: data.nodes,
+//             edges: data.edges
+//         });
+//         graph.render();
+//         // graph.data({
+//         //     nodes: [
+//         //         {
+//         //             id: "1",
+//         //             x: 10,
+//         //             y: 10
+//         //         },
+//         //         {
+//         //             id: "2",
+//         //             x: 200,
+//         //             y: 200
+//         //         }
+//         //     ],
+//         //     edges: [
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         },
+//         //         {
+//         //             source: "1",
+//         //             target: "2"
+//         //         }
+//         //     ]
+//         // });
+//         // graph.render();
+//     });
+//
+//     $("#graph").mouseup(function() {
+//         console.log(position.top)
+//         console.log(position.left)
+//         const top = position.top * -1;
+//         const left = position.left * -1;
+//         const endTop = top + 2000;
+//         const endLeft = left + 2000;
+//         const queryString = `leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
+//         $.get(`http://localhost:8087/graph/vo?${queryString}`, function(data) {
+//             graph.data({
+//                 nodes: data.nodes,
+//                 edges: data.edges
+//             });
+//             graph.render();
+//         });
+//     });
+// });
+</script>
+<body>
+    <div id="range">
+        <div id="container"></div>
+        <div id="graph"></div>
+    </div>
+</body>
+</html>
