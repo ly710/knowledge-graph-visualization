@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ExceptionHandlerAdvice
 {
     @ExceptionHandler(Exception.class)
-    public Result<String> ExceptionHandler(Exception exception)
+    public Result<String> ExceptionHandler(Exception e)
     {
-//        log.error("uncaught Exception");
-//        log.error(exception.getMessage(), exception);
+        e.printStackTrace();
         return new Result<String>(1, "error", null);
     }
 }

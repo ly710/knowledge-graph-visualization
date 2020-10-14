@@ -1,5 +1,6 @@
 package knowledge.graph.visualization.service;
 
+import knowledge.graph.visualization.controller.Dir;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,11 @@ import java.util.Objects;
 
 @Service
 public class FileService {
-    private String uploadDir = "/tmp/upload/";
 
     private final Path fileStorageLocation; // 文件在本地存储的地址
 
     public FileService() {
+        String uploadDir = Dir.BASE_DIR;
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -35,24 +36,23 @@ public class FileService {
      * @param file 文件
      * @return 文件名
      */
-    public String storeFile(MultipartFile file, String prefix) {
+    public String storeFile(MultipartFile file, String targetFileName) {
         // Normalize file name
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        fileName = prefix + "_" + fileName;
+//        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
         try {
             // Check if the file's name contains invalid characters
-            if(fileName.contains("..")) {
-                throw new FileException("Sorry! Filename contains invalid path sequence " + fileName);
-            }
+//            if(fileName.contains("..")) {
+//                throw new FileException("Sorry! Filename contains invalid path sequence " + fileName);
+//            }
 
             // Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Path targetLocation = this.fileStorageLocation.resolve(targetFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return fileName;
+            return targetFileName;
         } catch (IOException ex) {
-            throw new FileException("Could not store file " + fileName + ". Please try again!", ex);
+            throw new FileException("Could not store file " + targetFileName + ". Please try again!", ex);
         }
     }
 

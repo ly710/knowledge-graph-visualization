@@ -15,11 +15,11 @@
         position: absolute;
         background-color: #131313;
     }
-/* 
+
     #minimap {
         position: absolute;
         z-index:auto;
-    } */
+    }
 </style>
 <script type="application/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -28,14 +28,14 @@
 <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.2.6/build/minimap.js"></script>
 <script type="application/javascript">
  $(document).ready(function() {
-    const rangeWidth = 1500;
-    const rangeHeight = 700;
-    const containerWidth = rangeWidth * 3;
-    const containerHeight = rangeHeight * 3;
-    const containerLeft = -(containerHeight / 2);
-    const containerTop = -(containerHeight / 2);
-    const graphWidth = 4000;
-    const graphHeight = 4000;
+    const rangeWidth = 2000;
+    const rangeHeight = 2000;
+    const containerWidth = rangeWidth;
+    const containerHeight = rangeHeight;
+    const containerLeft = 0;
+    const containerTop = 0;
+    const graphWidth = 2000;
+    const graphHeight = 2000;
     
     $("#range").css("width", rangeWidth + "px");
     $("#range").css("height", rangeHeight + "px");
@@ -52,12 +52,12 @@
         }
     }, 'mds');
 
-    // const minimap = new Minimap({
-    //     container: 'minimap',
-    //     size: [100, 100],
-    //     className: 'minimap',
-    //     type: 'delegate',
-    // });
+    const minimap = new Minimap({
+        container: 'minimap',
+        size: [100, 100],
+        className: 'minimap',
+        type: 'delegate',
+    });
 
     const graph = new G6.Graph({
         container: 'container',
@@ -78,16 +78,16 @@
                 lineWidth: 0.3
             }
         },
-        // plugins: [minimap]
+        plugins: [minimap]
     });
 
-    let graphCentrolPosition = { left: (graphWidth / 2) + containerLeft, top: (graphHeight / 2) + containerTop};
+    let graphCentrolPosition = { left: 0, top: 0};
 
     const top = graphCentrolPosition.top;
     const left = graphCentrolPosition.left;
     const endTop =  graphCentrolPosition.top + containerHeight;
     const endLeft = graphCentrolPosition.left + containerWidth;
-    const queryString = `datasetName=yago-sample&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
+    const queryString = `datasetName=yago-sample&minimap=1&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
     $.get(`http://localhost:8087/graph?${queryString}`, function(data) {
         graph.data({
             nodes: data.nodes,
@@ -95,36 +95,12 @@
         });
         graph.render();
     });
-
-    $("#container").draggable({
-        containment: "range",
-        drag: function(event, ui) {},
-
-        stop: function(event, ui) {
-            graphCentrolPosition.left = graphCentrolPosition.left - (ui.position.left - ui.originalPosition.left);
-            graphCentrolPosition.top = graphCentrolPosition.top - (ui.position.top - ui.originalPosition.top);
-            const top = graphCentrolPosition.top;
-            const left = graphCentrolPosition.left;
-            const endTop = top + containerHeight;
-            const endLeft = left + containerWidth;
-            const queryString = `datasetName=yago-sample&minimap=0&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
-            $.get(`http://localhost:8087/graph?${queryString}`, function(data) {
-                $("#container").css("left", containerLeft);
-                $("#container").css("top", containerTop);
-                graph.data({
-                    nodes: data.nodes,
-                    edges: data.edges
-                });
-                graph.render();
-            });
-        }
-    });
 });
 </script>
 <body>
     <div id="range">
         <div id="container"></div>
     </div>
-    <!-- <div id="minimap" class="minimap"></div> -->
+    <div id="minimap" class="minimap"></div>
 </body>
 </html>
