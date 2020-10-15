@@ -1,7 +1,6 @@
 package knowledge.graph.visualization.controller;
 
 import knowledge.graph.visualization.domain.repo.EdgeRepo;
-import knowledge.graph.visualization.service.FlinkSyncClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,23 +14,6 @@ public class GraphController {
     @Autowired
     public GraphController(EdgeRepo edgeRepo) {
         this.edgeRepo = edgeRepo;
-    }
-
-    @GetMapping("/process")
-    public Result<Void> process(
-            String datasetName
-    ) throws Exception {
-        FlinkSyncClient flinkSyncClient = new FlinkSyncClient(
-                "knowledge.graph.visualization.jobs.JobReceiver",
-                "948b0da7-6efa-45dc-ab11-6fe2aa391cf0_knowledge-graph-visualization-jobs-0.0.1.jar",
-                "localhost",
-                8081
-        );
-//        flinkSyncClient.execute("to-graph", datasetName);
-//        flinkSyncClient.execute("layout", datasetName);
-//        flinkSyncClient.execute("graph-partition", datasetName);
-
-        return new Result<>();
     }
 
     @GetMapping("/graph")

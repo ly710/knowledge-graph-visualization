@@ -49,4 +49,8 @@ dependencies {
     compile('mysql:mysql-connector-java:8.0.20')
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.locationtech.jts:jts-core:1.16.1")
+
+    compile("com.nextbreakpoint:com.nextbreakpoint.flinkclient:1.0.3")
+
+    compile("com.zeaho:util:1.0.4")
 }
