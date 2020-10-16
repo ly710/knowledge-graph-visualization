@@ -27,97 +27,113 @@
 <!-- <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.2.6/build/grid.js"></script> -->
 <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.2.6/build/minimap.js"></script>
 <script type="application/javascript">
+    function getQueryStringByName(name){
+        var result = location.search.match(new RegExp("[\?\&]" + name+ "=([^\&]+)","i"));
+        if(result == null || result.length < 1) {
+            return "";
+        }
+        return result[1];
+    }
+
  $(document).ready(function() {
-    const rangeWidth = 1500;
-    const rangeHeight = 700;
-    const containerWidth = rangeWidth * 3;
-    const containerHeight = rangeHeight * 3;
-    const containerLeft = -(containerHeight / 2);
-    const containerTop = -(containerHeight / 2);
-    const graphWidth = 4000;
-    const graphHeight = 4000;
-    
-    $("#range").css("width", rangeWidth + "px");
-    $("#range").css("height", rangeHeight + "px");
-    $("#container").css("width", containerWidth + "px");
-    $("#container").css("height", containerHeight + "px");
-    $("#container").css("left", containerLeft + "px");
-    $("#container").css("top", containerTop + "px");
-    
-    G6.registerLayout('test-layout', {
-        getDefaultCfg: function getDefaultCfg() {
-        },
-
-        execute: function execute() {
+    let datasetName = getQueryStringByName("dataset");
+    $.get(`http://localhost:8087/meta-info?datasetName=${datasetName}`, function(data) {
+        if(!data.XCode === 0) {
+            return;
         }
-    }, 'mds');
 
-    // const minimap = new Minimap({
-    //     container: 'minimap',
-    //     size: [100, 100],
-    //     className: 'minimap',
-    //     type: 'delegate',
-    // });
+        const rangeWidth = window.screen.availWidth;
+        const rangeHeight = window.screen.availHeight;
+        const containerWidth = rangeWidth * 3;
+        const containerHeight = rangeHeight * 3;
+        const containerLeft = -(containerWidth / 2);
+        const containerTop = -(containerHeight / 2);
+        const graphWidth = data.XResult.width;
+        const graphHeight = data.XResult.height;
 
-    const graph = new G6.Graph({
-        container: 'container',
-        width: containerWidth,
-        height: containerHeight,
-        layout: {
-            type: 'test-layout',
-        },
-        defaultNode: {
-            shape: "circle-animate",
-            size: 8,
-        },
-        defaultEdge: {
-            // shape: "quadratic",
-            style: {
-                opacity: 0.8,
-                stroke: '#D5D5D5',
-                lineWidth: 0.3
+        $("#range").css("width", rangeWidth + "px");
+        $("#range").css("height", rangeHeight + "px");
+        $("#container").css("width", containerWidth + "px");
+        $("#container").css("height", containerHeight + "px");
+        $("#container").css("left", containerLeft + "px");
+        $("#container").css("top", containerTop + "px");
+
+        G6.registerLayout('test-layout', {
+            getDefaultCfg: function getDefaultCfg() {
+            },
+
+            execute: function execute() {
             }
-        },
-        // plugins: [minimap]
-    });
+        }, 'mds');
 
-    let graphCentrolPosition = { left: (graphWidth / 2) + containerLeft, top: (graphHeight / 2) + containerTop};
+        // const minimap = new Minimap({
+        //     container: 'minimap',
+        //     size: [100, 100],
+        //     className: 'minimap',
+        //     type: 'delegate',
+        // });
 
-    const top = graphCentrolPosition.top;
-    const left = graphCentrolPosition.left;
-    const endTop =  graphCentrolPosition.top + containerHeight;
-    const endLeft = graphCentrolPosition.left + containerWidth;
-    const queryString = `datasetName=yago-sample&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
-    $.get(`http://localhost:8087/graph?${queryString}`, function(data) {
-        graph.data({
-            nodes: data.nodes,
-            edges: data.edges
+        const graph = new G6.Graph({
+            container: 'container',
+            width: containerWidth,
+            height: containerHeight,
+            layout: {
+                type: 'test-layout',
+            },
+            defaultNode: {
+                shape: "circle-animate",
+                size: 8,
+            },
+            defaultEdge: {
+                // shape: "quadratic",
+                style: {
+                    opacity: 0.8,
+                    stroke: '#D5D5D5',
+                    lineWidth: 0.3
+                }
+            },
+            // plugins: [minimap]
         });
-        graph.render();
-    });
 
-    $("#container").draggable({
-        containment: "range",
-        drag: function(event, ui) {},
+        let graphCentrolPosition = {left: (graphWidth / 2) + containerLeft, top: (graphHeight / 2) + containerTop};
 
-        stop: function(event, ui) {
-            graphCentrolPosition.left = graphCentrolPosition.left - (ui.position.left - ui.originalPosition.left);
-            graphCentrolPosition.top = graphCentrolPosition.top - (ui.position.top - ui.originalPosition.top);
-            const top = graphCentrolPosition.top;
-            const left = graphCentrolPosition.left;
-            const endTop = top + containerHeight;
-            const endLeft = left + containerWidth;
-            const queryString = `datasetName=yago-sample&minimap=0&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
-            $.get(`http://localhost:8087/graph?${queryString}`, function(data) {
-                $("#container").css("left", containerLeft);
-                $("#container").css("top", containerTop);
-                graph.data({
-                    nodes: data.nodes,
-                    edges: data.edges
-                });
-                graph.render();
+        const top = graphCentrolPosition.top;
+        const left = graphCentrolPosition.left;
+        const endTop = graphCentrolPosition.top + containerHeight;
+        const endLeft = graphCentrolPosition.left + containerWidth;
+        const queryString = `datasetName=${datasetName}&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
+        $.get(`http://localhost:8087/graph?${queryString}`, function (data) {
+            graph.data({
+                nodes: data.nodes,
+                edges: data.edges
             });
-        }
+            graph.render();
+        });
+
+        $("#container").draggable({
+            containment: "range",
+            drag: function (event, ui) {
+            },
+
+            stop: function (event, ui) {
+                graphCentrolPosition.left = graphCentrolPosition.left - (ui.position.left - ui.originalPosition.left);
+                graphCentrolPosition.top = graphCentrolPosition.top - (ui.position.top - ui.originalPosition.top);
+                const top = graphCentrolPosition.top;
+                const left = graphCentrolPosition.left;
+                const endTop = top + containerHeight;
+                const endLeft = left + containerWidth;
+                const queryString = `datasetName=${datasetName}&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
+                $.get(`http://localhost:8087/graph?${queryString}`, function (data) {
+                    $("#container").css("left", containerLeft);
+                    $("#container").css("top", containerTop);
+                    graph.data({
+                        nodes: data.nodes,
+                        edges: data.edges
+                    });
+                    graph.render();
+                });
+            }
+        });
     });
 });
 </script>

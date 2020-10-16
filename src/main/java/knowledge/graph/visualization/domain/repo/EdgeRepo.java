@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface EdgeRepo {
-    List<Edge> getEdges(int minimap, String leftTopX, String leftTopY, String rightBottomX, String rightBottomY);
+    List<Edge> getEdges(String dataset, String leftTopX, String leftTopY, String rightBottomX, String rightBottomY);
 }

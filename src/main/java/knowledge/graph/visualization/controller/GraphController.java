@@ -1,8 +1,12 @@
 package knowledge.graph.visualization.controller;
 
+import com.zeaho.util.jsonModel.JsonResult;
+import knowledge.graph.visualization.domain.model.Meta;
 import knowledge.graph.visualization.domain.repo.EdgeRepo;
+import knowledge.graph.visualization.domain.repo.MetaRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,21 +15,26 @@ import java.util.List;
 public class GraphController {
     private final EdgeRepo edgeRepo;
 
+    private final MetaRepo metaRepo;
+
     @Autowired
-    public GraphController(EdgeRepo edgeRepo) {
+    public GraphController(
+            EdgeRepo edgeRepo,
+            MetaRepo metaRepo
+    ) {
         this.edgeRepo = edgeRepo;
+        this.metaRepo = metaRepo;
     }
 
     @GetMapping("/graph")
     public GraphVO getGraph(
             String datasetName,
-            Integer minimap,
             String leftTopX,
             String leftTopY,
             String rightBottomX,
             String rightBottomY
-    ) throws Exception {
-        List<knowledge.graph.visualization.domain.model.Edge> edges = edgeRepo.getEdges(minimap, leftTopX, leftTopY, rightBottomX, rightBottomY);
+    ) {
+        List<knowledge.graph.visualization.domain.model.Edge> edges = edgeRepo.getEdges(datasetName, leftTopX, leftTopY, rightBottomX, rightBottomY);
 
         List<NodeVO> nodeVOS = new ArrayList<>();
         List<EdgeVO> edgeVOS = new ArrayList<>();
@@ -54,6 +63,12 @@ public class GraphController {
         }
 
         return new GraphVO(nodeVOS, edgeVOS);
+    }
+
+    @GetMapping("/meta-info")
+    public JsonResult getMetaInfo(@RequestParam String datasetName) {
+        Meta meta = metaRepo.getMeta(datasetName);
+        return JsonResult.successResult(meta);
     }
 
     public static class GraphVO {
@@ -100,4 +115,37 @@ public class GraphController {
             this.label = label;
         }
     }
+
+    /**
+     * CREATE TABLE `meta` (
+     *   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+     *   `dataset` char(64) DEFAULT NULL,
+     *   `width` int(10) unsigned NOT NULL,
+     *   `height` int(10) unsigned NOT NULL,
+     *   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     *   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+     *   PRIMARY KEY (`id`),
+     *   KEY `dataset` (`dataset`)
+     * ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC
+     */
+
+    /**
+     * CREATE TABLE `edge` (
+     *   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+     *   `dataset` char(64) DEFAULT NULL,
+     *   `source_id` bigint(20) unsigned NOT NULL,
+     *   `target_id` bigint(20) unsigned NOT NULL,
+     *   `source_label` char(64) DEFAULT NULL,
+     *   `target_label` char(64) DEFAULT NULL,
+     *   `source_size` double NOT NULL,
+     *   `target_size` double NOT NULL,
+     *   `edge_label` char(64) DEFAULT NULL,
+     *   `position` linestring NOT NULL,
+     *   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     *   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+     *   PRIMARY KEY (`id`),
+     *   KEY `dataset` (`dataset`),
+     *   SPATIAL KEY `position` (`position`)
+     * ) ENGINE=InnoDB AUTO_INCREMENT=23158 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC
+     */
 }

@@ -8,7 +8,7 @@
         SELECT
             *
         FROM `edge` e
-        WHERE `minimap` = #{minimap} AND ST_INTERSECTS(ST_GeomFromText(&apos;Polygon((
+        WHERE dataset=#{dataset} AND ST_INTERSECTS(ST_GeomFromText(&apos;Polygon((
             ${leftTopX} ${leftTopY},
             ${rightBottomX} ${leftTopY},
             ${rightBottomX} ${rightBottomY},

@@ -1,7 +1,5 @@
 package knowledge.graph.visualization.domain.model;
 
-import java.util.Arrays;
-
 public class Edge extends AbstractModel {
     private Long SourceId;
 
