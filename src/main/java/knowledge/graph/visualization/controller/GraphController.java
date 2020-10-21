@@ -1,11 +1,16 @@
 package knowledge.graph.visualization.controller;
 
+import com.zeaho.util.jsonModel.JsonCode;
 import com.zeaho.util.jsonModel.JsonResult;
 import knowledge.graph.visualization.domain.model.Meta;
+import knowledge.graph.visualization.domain.model.Predict;
 import knowledge.graph.visualization.domain.repo.EdgeRepo;
 import knowledge.graph.visualization.domain.repo.MetaRepo;
+import knowledge.graph.visualization.domain.repo.PredictRepo;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
@@ -17,13 +22,17 @@ public class GraphController {
 
     private final MetaRepo metaRepo;
 
+    private final PredictRepo predictRepo;
+
     @Autowired
     public GraphController(
             EdgeRepo edgeRepo,
-            MetaRepo metaRepo
+            MetaRepo metaRepo,
+            PredictRepo predictRepo
     ) {
         this.edgeRepo = edgeRepo;
         this.metaRepo = metaRepo;
+        this.predictRepo = predictRepo;
     }
 
     @GetMapping("/graph")
@@ -69,6 +78,26 @@ public class GraphController {
     public JsonResult getMetaInfo(@RequestParam String datasetName) {
         Meta meta = metaRepo.getMeta(datasetName);
         return JsonResult.successResult(meta);
+    }
+
+    @GetMapping("/predict")
+    public JsonResult getPredicts(@RequestParam String datasetName) {
+        List<Predict> predicts = predictRepo.getPredicts(datasetName);
+        for(Predict predict : predicts) {
+            predict.setName(StringEscapeUtils.escapeHtml4(predict.getName()));
+        }
+        return JsonResult.successResult(predicts);
+    }
+
+    @GetMapping("/predict/{id}/hide")
+    public JsonResult hidePredicts(@PathVariable Long id, @RequestParam Integer keep) {
+        try {
+            predictRepo.operatePredicts(id, keep);
+            return JsonResult.successResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JsonResult.newJsonResult(JsonCode.OPERATE_FAILED);
+        }
     }
 
     public static class GraphVO {
