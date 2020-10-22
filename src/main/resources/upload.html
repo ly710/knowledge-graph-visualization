@@ -8,6 +8,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="application/javascript">
         let host = "http://localhost:8087";
+        console.log(GetUrlRelativePath(document.URL));
+
+        function GetUrlRelativePath() {
+            const url = document.location.toString();
+            const arrUrl = url.split("//");
+
+            const start = arrUrl[1].indexOf("/");
+            let relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+            if(relUrl.indexOf("?") !== -1){
+                relUrl = relUrl.split("?")[0];
+            }
+            return relUrl;
+        }
 
         function getQueryStringByName(name){
             var result = location.search.match(new RegExp("[\?\&]" + name+ "=([^\&]+)","i"));
@@ -21,6 +35,36 @@
             $.getJSON(`${host}/predict/${id}/hide?keep=${keep}`, function(data) {
                 if(data.XCode === 0) {
                     window.location.reload();
+                }
+            });
+        }
+
+        function upload() {
+            let formData = new FormData();
+            const datasetName = $("#dataset")[0].value;
+            formData.append("name", datasetName);
+            formData.append("tuples", $("#tuples")[0].files[0]);
+
+            $.ajax({
+                url : `${host}/upload`,
+                type : 'POST',
+                cache : false,
+                data : formData,
+                processData : false,
+                contentType : false,
+                success : function(result) {
+                    if(result.XCode === 0) {
+                        window.location.href = window.location.href + "?dataset=" + datasetName;
+                    }
+                }
+            });
+        }
+
+        function layout() {
+            let datasetName = getQueryStringByName("dataset");
+            $.getJSON(`${host}/layout?name=${datasetName}`, function(data) {
+                if(data.XCode === 0) {
+                    window.location.href = GetUrlRelativePath(document.URL).replace("upload", "index") + "?&dataset=" + datasetName;
                 }
             });
         }
@@ -50,21 +94,19 @@
 <div class="container">
     <form>
         <div class="form-group">
-            <label for="exampleInputEmail1">数据集名</label>
-            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <label for="dataset">数据集名</label>
+            <input type="text" id="dataset" class="form-control" aria-describedby="emailHelp">
         </div>
         <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="file" class="form-control" id="exampleInputPassword1">
+            <label for="tuples">Password</label>
+            <input type="file" id="tuples" class="form-control">
         </div>
-        <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-primary" onclick="upload()">Submit</button>
     </form>
     <ul class="list-group" id="predictsList">
     </ul>
+    <br/>
+    <button type="button" class="btn btn-primary" onclick="layout()">布局</button>
 </div>
 </body>
 </html>

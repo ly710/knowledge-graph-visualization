@@ -48,6 +48,26 @@ public class KGVisualizationJobService {
         }
     }
 
+    public boolean countPredicts(String datasetName, String path) {
+        String programArgs = datasetName + "," + path + "," + dbConfig.getUrl() + "," + dbConfig.getUsername() + "," + dbConfig.getPassword();
+
+        try {
+            JarRunResponseBody response = flinkApi.runJar(
+                    jarId,
+                    true,
+                    null,
+                    null,
+                    programArgs,
+                    "knowledge.graph.visualization.jobs.CountPredictsJob",
+                    null
+            );
+            return checkJobSuccess(response.getJobid());
+        } catch (ApiException e) {
+            log.error("run jar faild", e);
+            return false;
+        }
+    }
+
     private boolean checkJobSuccess(String jobId) {
         try {
             JobDetailsInfo details = flinkApi.getJobDetails(jobId);

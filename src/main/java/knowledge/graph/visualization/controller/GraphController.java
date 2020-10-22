@@ -177,4 +177,18 @@ public class GraphController {
      *   SPATIAL KEY `position` (`position`)
      * ) ENGINE=InnoDB AUTO_INCREMENT=23158 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC
      */
+
+    /**
+     * CREATE TABLE `predict` (
+     *   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+     *   `dataset` char(64) DEFAULT NULL,
+     *   `name` char(64) DEFAULT NULL,
+     *   `count` int(10) NOT NULL DEFAULT '0',
+     *   `keep` tinyint(3) DEFAULT '1',
+     *   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     *   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+     *   PRIMARY KEY (`id`),
+     *   KEY `dataset` (`dataset`)
+     * ) ENGINE=InnoDB AUTO_INCREMENT=265 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC
+     */
 }

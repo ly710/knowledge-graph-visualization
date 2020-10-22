@@ -37,7 +37,8 @@
 
  $(document).ready(function() {
     let datasetName = getQueryStringByName("dataset");
-    $.get(`http://localhost:8087/meta-info?datasetName=${datasetName}`, function(data) {
+    const host = "http://localhost:8087";
+    $.get(`${host}/meta-info?datasetName=${datasetName}`, function(data) {
         if(!data.XCode === 0) {
             return;
         }
@@ -102,7 +103,7 @@
         const endTop = graphCentrolPosition.top + containerHeight;
         const endLeft = graphCentrolPosition.left + containerWidth;
         const queryString = `datasetName=${datasetName}&leftTopX=${left}&leftTopY=${top}&rightBottomX=${endLeft}&rightBottomY=${endTop}`;
-        $.get(`http://localhost:8087/graph?${queryString}`, function (data) {
+        $.get(`${host}/graph?${queryString}`, function (data) {
             graph.data({
                 nodes: data.nodes,
                 edges: data.edges
